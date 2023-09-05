@@ -1,9 +1,13 @@
 import Notes from "./Notes";
+import NewNote from "./NewNote";
 
-const NotePages = () => {
+const NotePages = ({ notes }) => {
   return (
     <div className="note-pages">
-      <Notes />
+      {notes.map((note) => (
+        <Notes id={note.id} text={note.text} date={note.date} />
+      ))}
+      <NewNote />
     </div>
   );
 };
