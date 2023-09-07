@@ -1,14 +1,19 @@
-import { logDOM } from "@testing-library/react";
 import { useState } from "react";
 
 const NewNote = ({ handleAddNote }) => {
   const [noteText, setNoteText] = useState("");
+  const characterLimit = 250;
   const handleChange = (event) => {
-    setNoteText(event.target.value);
+    if (characterLimit - event.target.value.length >= 0) {
+      setNoteText(event.target.value);
+    }
   };
 
   const handleSaveClick = () => {
-    handleAddNote(noteText);
+    if (noteText.trim().length > 0) {
+      handleAddNote(noteText);
+      setNoteText("");
+    }
   };
 
   return (
@@ -21,7 +26,7 @@ const NewNote = ({ handleAddNote }) => {
         onChange={handleChange}
       ></textarea>
       <div className="notes-footer">
-        <small>200 remaining</small>
+        <small>{characterLimit - noteText.length} remaining</small>
         <button className="save" onClick={handleSaveClick}>
           Save
         </button>
