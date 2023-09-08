@@ -1,70 +1,56 @@
-import { useEffect, useState } from "react";
-import { nanoid } from "nanoid";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import NotePages from "./components/NotePages";
 import Search from "./components/Search";
 import Header from "./components/Header";
+import { addNote, deleteNote } from "./actions";
 
 const App = () => {
-  const [notes, setNotes] = useState(() => {
-    const savedNotes = JSON.parse(localStorage.getItem("react-notes-app-data"));
-    return (
-      savedNotes || [
-        {
-          id: nanoid(),
-          text: "this is the 1st note",
-          date: "11/11/2023",
-        },
-        {
-          id: nanoid(),
-          text: "this is the 2nd note",
-          date: "22/11/2023",
-        },
-        {
-          id: nanoid(),
-          text: "this is the 3rd note",
-          date: "30/11/2023",
-        },
-        {
-          id: nanoid(),
-          text: "add new note",
-          date: "30/11/2023",
-        },
-      ]
-    );
-  });
+  const notes = useSelector((state) => state.notes);
+  const dispatch = useDispatch();
 
   const [searchText, setSearchText] = useState("");
 
+  // Load data from localStorage when the app starts
   useEffect(() => {
-    localStorage.setItem("react-notes-app-data", JSON.stringify(notes));
+    const savedNotes = JSON.parse(localStorage.getItem("react-notes-app-data"));
+    if (savedNotes) {
+      dispatch({ type: "SET_NOTES", payload: savedNotes });
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    const beforeUnloadHandler = () => {
+      localStorage.setItem("react-notes-app-data", JSON.stringify(notes));
+    };
+
+    window.addEventListener("beforeunload", beforeUnloadHandler);
+
+    return () => {
+      window.removeEventListener("beforeunload", beforeUnloadHandler);
+    };
   }, [notes]);
 
-  const addNote = (text) => {
-    const date = new Date();
-    const newNote = {
-      id: nanoid(),
-      text: text,
-      date: date.toLocaleDateString(),
-    };
-    const newNotes = [...notes, newNote];
-    setNotes(newNotes);
+  const handleAddNote = (text) => {
+    dispatch(addNote(text));
   };
 
-  const deleteNote = (id) => {
-    const newNotes = notes.filter((note) => note.id !== id);
-    setNotes(newNotes);
+  const handleDeleteNote = (id) => {
+    dispatch(deleteNote(id));
   };
+
+  const filteredNotes = notes.filter((note) =>
+    note.text.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <div className="container">
       <Header />
       <Search handleSearchNote={setSearchText} />
       <NotePages
-        notes={notes.filter((note) =>
-          note.text.toLowerCase().includes(searchText.toLowerCase())
-        )}
-        handleAddNote={addNote}
-        handleDeleteNote={deleteNote}
+        notes={filteredNotes}
+        handleAddNote={handleAddNote}
+        handleDeleteNote={handleDeleteNote}
       />
     </div>
   );

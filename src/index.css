@@ -88,6 +88,7 @@ margin-bottom: 20px;
 }
 
 .search input{
+  margin: 10px;
   border: none;
   background-color: rgb(207, 198, 198);
 }

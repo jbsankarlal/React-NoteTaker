@@ -1,8 +1,12 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addNote } from "../actions";
 
-const NewNote = ({ handleAddNote }) => {
+const NewNote = () => {
   const [noteText, setNoteText] = useState("");
   const characterLimit = 250;
+  const dispatch = useDispatch();
+
   const handleChange = (event) => {
     if (characterLimit - event.target.value.length >= 0) {
       setNoteText(event.target.value);
@@ -11,7 +15,7 @@ const NewNote = ({ handleAddNote }) => {
 
   const handleSaveClick = () => {
     if (noteText.trim().length > 0) {
-      handleAddNote(noteText);
+      dispatch(addNote(noteText)); // Dispatch the addNote action
       setNoteText("");
     }
   };
