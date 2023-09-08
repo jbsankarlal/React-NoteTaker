@@ -11,6 +11,7 @@ To start using the app, follow these simple steps:
    ```bash
    git clone https://github.com/your-username/note-taking-app.git
 
+```bash
 2.cd note-taking-app
 3.npm install
 4.npm start
